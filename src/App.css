@@ -1,0 +1,21 @@
+:root {
+  --color-bg-start: #e7f8e3;
+  --color-bg-end: #fef6e4;
+}
+
+html, body, #root, .App {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+.App {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f0f0f0; /* optionnel, fond clair */
+}
