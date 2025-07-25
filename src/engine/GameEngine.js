@@ -11,7 +11,7 @@ export class GameEngine {
   }
 
   initEntities() {
-    const total = 30;
+    const total = 100;
     const types = ["chicken", "fox", "snake"];
 
     for (let i = 0; i < total; i++) {
