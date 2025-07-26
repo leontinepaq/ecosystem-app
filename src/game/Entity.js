@@ -1,3 +1,5 @@
+import {sprites} from "../graphics/sprites"
+
 export class Entity {
   constructor(x, y, type, color) {
     this.x = x;
@@ -53,22 +55,33 @@ export class Entity {
     );
   }
 
+  // render(ctx) {
+  //   ctx.fillStyle = this.color;
+  //   ctx.beginPath();
+  //   ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+  //   ctx.fill();
+
+  //   ctx.beginPath();
+  //   ctx.arc(this.x, this.y, this.visionRange, 0, 2 * Math.PI);
+  //   ctx.strokeStyle = "rgba(203, 206, 206, 0.2)"; // vert semi-transparent
+  //   ctx.stroke();
+
+  //   ctx.fillStyle = "black"; // couleur texte (tu peux ajuster)
+  //   ctx.font = `${this.radius}px Arial`; // taille relative au rayon
+  //   ctx.textAlign = "center";
+  //   ctx.textBaseline = "middle";
+  //   ctx.fillText(Math.floor(this.energy), this.x, this.y);
+  // }
+
   render(ctx) {
-    ctx.fillStyle = this.color;
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.visionRange, 0, 2 * Math.PI);
-    ctx.strokeStyle = "rgba(203, 206, 206, 0.2)"; // vert semi-transparent
-    ctx.stroke();
-
-    ctx.fillStyle = "black"; // couleur texte (tu peux ajuster)
-    ctx.font = `${this.radius}px Arial`; // taille relative au rayon
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(Math.floor(this.energy), this.x, this.y);
+    const img = sprites[this.type]; // ou autre clé
+    ctx.drawImage(
+      img,
+      this.x - this.radius,
+      this.y - this.radius,
+      this.radius * 2,
+      this.radius * 2
+    );
   }
 
   update(entities, engine) {

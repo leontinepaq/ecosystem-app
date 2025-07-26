@@ -8,19 +8,25 @@ export class Animal extends Entity {
     super(x, y, type, config.color);
     this.applySpeciesConfig(config);
     this.lastReproduction = Date.now();
-    this.energy = 100;
+    this.energy = Math.random() * 100;
     this.maxEnergy = 100;
   }
 
   applySpeciesConfig(config) {
-    this.radius = config.radius ?? 5;
+    const randomize = (base, variation = 0.1) => {
+      const delta = base * variation;
+      return base + (Math.random() * 2 - 1) * delta; // +/- variation%
+    };
+
+    this.radius = randomize(config.radius ?? 5, 0.15); // ±15%
     this.reproductionCooldown = config.reproductionCooldown ?? 5000;
     this.reproductionChance = config.reproductionChance ?? 0.5;
     this.preyTypes = config.preyTypes ?? [];
-    this.speed = config.speed ?? 1.0;
-    this.visionRange = config.visionRange ?? 100;
+    this.speed = randomize(config.speed ?? 1.0, 0.2); // ±20%
+    this.visionRange = randomize(config.visionRange ?? 100, 0.1); // ±10%
     this.nutrition = this.radius * 5;
-  }
+}
+
 
   update(entities, engine) {
     this.consumeEnergy();
@@ -38,7 +44,7 @@ export class Animal extends Entity {
   }
 
   consumeEnergy() {
-    this.energy -= 0.005 * this.radius;
+    this.energy -= 0.001 * this.radius;
   }
 
   scanSurroundings(entities, engine) {
@@ -103,14 +109,13 @@ export class Animal extends Entity {
     }
   }
 
-
   tryReproduce(engine) {
     const now = Date.now();
     if (
       now - this.lastReproduction > this.reproductionCooldown &&
       Math.random() < this.reproductionChance &&
       this.energy > 30 &&
-      engine.entities.length < 1000
+      engine.entities.length < 5000
     ) {
       this.reproduce(engine);
       this.lastReproduction = now;
@@ -118,15 +123,18 @@ export class Animal extends Entity {
   }
 
   reproduce(engine) {
-    if (this.energy < 30) return;
-    const energyCost = this.energy / 3;
+    const energyCost = this.radius * 5 / 100 * this.energy;
+
+    if (this.energy < energyCost) return; // trop faible énergie pour repro
 
     const baby = createEntity(this.type, this.x + 5, this.y + 5);
-    baby.energy = 20 + energyCost;
-    this.energy -= energyCost;
+    baby.energy = 10 + energyCost;
 
+    this.energy -= energyCost;
     engine.addEntity(baby);
   }
+
+
 
   interactWith(other, engine) {
     if (this.preyTypes.includes(other.type)) {
@@ -140,7 +148,7 @@ export class Animal extends Entity {
   }
 
   onKill(other) {
-    const nutriments = SPECIES_CONFIG[other.type].nutrition;
+    const nutriments = other.nutrition;
     this.energy = Math.min(this.energy + nutriments, this.maxEnergy);
   }
 
