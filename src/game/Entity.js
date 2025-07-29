@@ -55,26 +55,8 @@ export class Entity {
     );
   }
 
-  // render(ctx) {
-  //   ctx.fillStyle = this.color;
-  //   ctx.beginPath();
-  //   ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-  //   ctx.fill();
-
-  //   ctx.beginPath();
-  //   ctx.arc(this.x, this.y, this.visionRange, 0, 2 * Math.PI);
-  //   ctx.strokeStyle = "rgba(203, 206, 206, 0.2)"; // vert semi-transparent
-  //   ctx.stroke();
-
-  //   ctx.fillStyle = "black"; // couleur texte (tu peux ajuster)
-  //   ctx.font = `${this.radius}px Arial`; // taille relative au rayon
-  //   ctx.textAlign = "center";
-  //   ctx.textBaseline = "middle";
-  //   ctx.fillText(Math.floor(this.energy), this.x, this.y);
-  // }
-
   render(ctx) {
-    const img = sprites[this.type]; // ou autre clé
+    const img = sprites[this.type];
     ctx.drawImage(
       img,
       this.x - this.radius,
@@ -82,21 +64,5 @@ export class Entity {
       this.radius * 2,
       this.radius * 2
     );
-  }
-
-  update(entities, engine) {
-    this.energy -= 0.05;
-    if (this.energy <= 0) {
-      this.dead = true; // ou déclenche une suppression
-    }
-    this.move(engine.canvas);
-    for (const other of entities) {
-      if (other === this || !this.isCloseTo(other)) continue;
-      this.interactWith(other, engine);
-    }
-  }
-
-  interactWith(other, engine) {
-    // à redéfinir dans les sous-classes
   }
 }

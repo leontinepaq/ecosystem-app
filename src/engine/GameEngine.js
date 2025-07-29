@@ -1,8 +1,15 @@
 import { createEntity } from "../game/createEntity";
 import drawBackground from "../graphics/drawBackground";
 
+const DEFAULT_ENTITY_TYPES = ["chicken", "fox", "snake"];
+const DEFAULT_TOTAL_ENTITIES = 50;
+
 export class GameEngine {
   constructor(ctx, canvas, onEndCallback) {
+    if (!ctx || !canvas) {
+      throw new Error("Context and canvas must be provided");
+    }
+
     this.ctx = ctx;
     this.canvas = canvas;
     this.entities = [];
@@ -10,12 +17,15 @@ export class GameEngine {
     this.lastTimestamp = 0;
     this.onEnd = onEndCallback;
     this.startTime = Date.now();
+    this.onUpdateStats = null; // Callback pour les statistiques
 
-    this.onUpdateStats = null; // à définir depuis l’extérieur si besoin
+    this.instanceId = Math.random().toString(36).substr(2, 9); // Identifiant unique pour chaque instance pour debug
+
+    console.log(`GameEngine instance created with ID: ${this.instanceId}`);
   }
 
-  initEntities(total = 200, types = ["chicken", "fox", "snake"]) {
-    this.entities = []; // vider avant init
+  initEntities(total = DEFAULT_TOTAL_ENTITIES, types = DEFAULT_ENTITY_TYPES) {
+    this.entities = []; // Vider avant l'initialisation
     for (let i = 0; i < total; i++) {
       const type = types[i % types.length];
       const x = Math.random() * this.canvas.width;
@@ -25,20 +35,20 @@ export class GameEngine {
   }
 
   addEntity(entity) {
-    this.entities.push(entity);
+    if (entity) {
+      this.entities.push(entity);
+    }
   }
 
   update(delta) {
-    for (const entity of this.entities) {
-      entity.update(this.entities, this);
-    }
-    this.entities = this.entities.filter((e) => !e.dead);
+    this.entities.forEach((entity) => entity.update(this.entities, this));
+    this.entities = this.entities.filter((entity) => !entity.dead);
 
     if (this.onUpdateStats) {
-      const counts = {};
-      for (const a of this.entities) {
-        counts[a.type] = (counts[a.type] || 0) + 1;
-      }
+      const counts = this.entities.reduce((acc, entity) => {
+        acc[entity.type] = (acc[entity.type] || 0) + 1;
+        return acc;
+      }, {});
       this.onUpdateStats(counts);
     }
 
@@ -48,9 +58,7 @@ export class GameEngine {
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     drawBackground(this.ctx, this.canvas);
-    for (const entity of this.entities) {
-      entity.render(this.ctx);
-    }
+    this.entities.forEach((entity) => entity.render(this.ctx));
   }
 
   loop = (timestamp) => {
@@ -65,20 +73,22 @@ export class GameEngine {
     requestAnimationFrame(this.loop);
   };
 
-  start() {
+  start(totalEntities) {
     this.running = true;
     this.lastTimestamp = performance.now();
     this.startTime = Date.now();
-    this.initEntities();
+    this.initEntities(totalEntities);
     requestAnimationFrame(this.loop);
   }
 
   stop() {
+    console.log(`Stopping GameEngine with ID ${this.instanceId}`);
     this.running = false;
   }
 
   checkEndCondition() {
-    const livingSpecies = [...new Set(this.entities.map((a) => a.type))];
+    const livingSpecies = [...new Set(this.entities.map((entity) => entity.type))];
+
     if (livingSpecies.length === 1 && this.entities.length > 0) {
       const durationMs = Date.now() - this.startTime;
       this.onEnd?.(livingSpecies[0], durationMs);

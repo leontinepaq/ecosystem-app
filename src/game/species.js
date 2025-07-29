@@ -23,7 +23,7 @@ export const SPECIES_CONFIG = {
     color: "#77aa77",
     radius: 6,
     reproductionCooldown: 5000, // plus rapide
-    reproductionChance: 0.35, // un peu plus facile
+    reproductionChance: 0.5, // un peu plus facile
     preyTypes: ["fox"], // chasse les foxes
     speed: 2.6, // très rapide
     visionRange: 120, // assez bonne

@@ -25,8 +25,7 @@ export class Animal extends Entity {
     this.speed = randomize(config.speed ?? 1.0, 0.2); // ±20%
     this.visionRange = randomize(config.visionRange ?? 100, 0.1); // ±10%
     this.nutrition = this.radius * 5;
-}
-
+  }
 
   update(entities, engine) {
     this.consumeEnergy();
@@ -115,7 +114,7 @@ export class Animal extends Entity {
       now - this.lastReproduction > this.reproductionCooldown &&
       Math.random() < this.reproductionChance &&
       this.energy > 30 &&
-      engine.entities.length < 5000
+      engine.entities.length < 1000
     ) {
       this.reproduce(engine);
       this.lastReproduction = now;
@@ -123,7 +122,7 @@ export class Animal extends Entity {
   }
 
   reproduce(engine) {
-    const energyCost = this.radius * 5 / 100 * this.energy;
+    const energyCost = ((this.radius * 5) / 100) * this.energy;
 
     if (this.energy < energyCost) return; // trop faible énergie pour repro
 
@@ -134,11 +133,8 @@ export class Animal extends Entity {
     engine.addEntity(baby);
   }
 
-
-
   interactWith(other, engine) {
     if (this.preyTypes.includes(other.type)) {
-      other.dead = true;
       this.onKill(other);
     }
 
@@ -148,8 +144,8 @@ export class Animal extends Entity {
   }
 
   onKill(other) {
-    const nutriments = other.nutrition;
-    this.energy = Math.min(this.energy + nutriments, this.maxEnergy);
+    other.dead = true;
+    this.energy = Math.min(this.energy + other.nutrition, this.maxEnergy);
   }
 
   normalizeAndJitter(dx, dy) {
