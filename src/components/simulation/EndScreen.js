@@ -1,3 +1,4 @@
+import Button from "../common/Button";
 import "./EndScreen.css";
 
 function EndScreen({ duration, lastSpecies, onRestart }) {
@@ -9,7 +10,7 @@ function EndScreen({ duration, lastSpecies, onRestart }) {
       <h2>The simulation ended</h2>
       <p>Duration: {minutes} min {seconds} sec</p>
       <p>Last specy alive: <strong>{lastSpecies}</strong></p>
-      <button id="restartBtn" onClick={onRestart}>⟲ New simulation</button>
+      <Button onClick={onRestart}>⟲ New simulation</Button>
     </div>
   );
 }

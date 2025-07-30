@@ -2,6 +2,8 @@ import React from "react";
 import SpeciesStats from "./SpeciesStats";
 import Canvas from "./Canvas";
 import EndScreen from "./EndScreen";
+import Button from "../common/Button";
+import "./SimulationView.css";
 
 function SimulationView({
   canvasRef,
@@ -23,12 +25,9 @@ function SimulationView({
           onRestart={onRestart}
         />
       ) : (
-        <button
-          id="restartBtn"
-          onClick={onRestart}
-          style={{ position: "absolute", right: "10px", top: "10px", opacity: 0.80}}>
+        <Button onClick={onRestart} className="simulation-view__restart">
           ⟲
-        </button>
+        </Button>
       )}
     </div>
   );
