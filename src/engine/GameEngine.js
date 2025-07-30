@@ -3,6 +3,7 @@ import drawBackground from "../graphics/drawBackground";
 
 const DEFAULT_ENTITY_TYPES = ["chicken", "fox", "snake"];
 const DEFAULT_TOTAL_ENTITIES = 50;
+let globalDebugMode = true;
 
 export class GameEngine {
   constructor(ctx, canvas, onEndCallback) {
@@ -95,4 +96,12 @@ export class GameEngine {
       this.stop();
     }
   }
+}
+
+export function isDebugMode() {
+  return globalDebugMode;
+}
+
+export function toggleDebugMode() {
+  globalDebugMode = !globalDebugMode;
 }

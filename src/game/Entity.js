@@ -1,4 +1,6 @@
-import {sprites} from "../graphics/sprites"
+import { sprites } from "../graphics/sprites";
+import { isDebugMode } from "../engine/GameEngine";
+import { drawDisc, drawImage } from "../graphics/drawUtils";
 
 export class Entity {
   constructor(x, y, type, color) {
@@ -8,10 +10,11 @@ export class Entity {
     this.color = color;
     this.radius = 10;
     this.dead = false;
+    this.limitOverpopulation = 10;
     this.lastReproduction = Date.now();
     this.reproductionCooldown = 3000;
     this.speed = 1;
-    this.energy = 100; // énergie initiale
+    this.energy = 100;
     this.maxEnergy = 100;
 
     const angle = Math.random() * 2 * Math.PI;
@@ -55,14 +58,26 @@ export class Entity {
     );
   }
 
-  render(ctx) {
+  renderSprite(ctx) {
     const img = sprites[this.type];
-    ctx.drawImage(
-      img,
-      this.x - this.radius,
-      this.y - this.radius,
-      this.radius * 2,
-      this.radius * 2
-    );
+    const x = this.x - this.radius;
+    const y = this.y - this.radius;
+    const width = this.radius * 2;
+    const height = this.radius * 2;
+    const alpha = this.energy >= 30 ? 1 : 0.2 + (this.energy / 30) * 0.8;
+    drawImage(ctx, img, x, y, width, height, alpha);
+  }
+
+  renderVisionCircle(ctx) {
+    if (!this.visionRange) return;
+    drawDisc(ctx, this.x, this.y, this.visionRange, this.color, 0.1);
+  }
+
+  render(ctx) {
+    if (isDebugMode()) {
+      this.renderVisionCircle(ctx);
+      // this.renderDebugInfo(ctx);
+    }
+    this.renderSprite(ctx);
   }
 }

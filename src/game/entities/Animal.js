@@ -8,7 +8,7 @@ export class Animal extends Entity {
     super(x, y, type, config.color);
     this.applySpeciesConfig(config);
     this.lastReproduction = Date.now();
-    this.energy = Math.random() * 100;
+    this.energy = Math.random() * 70 + 30;
     this.maxEnergy = 100;
   }
 
@@ -43,7 +43,7 @@ export class Animal extends Entity {
   }
 
   consumeEnergy() {
-    this.energy -= 0.001 * this.radius;
+    this.energy -= 0.002 * this.radius;
   }
 
   scanSurroundings(entities, engine) {
@@ -72,9 +72,9 @@ export class Animal extends Entity {
   behavior(preys, predators, mates, engine) {
     if (predators.length > 0) {
       this.flee(predators);
-    } else if (preys.length > 0 && this.energy < 70) {
+    } else if (preys.length > 0 && (this.energy < 70 || mates.length === 0)) {
       this.follow(preys);
-    } else if (mates.length > 0 && this.energy > 30) {
+    } else if (mates.length > 0 && this.isAbleToReproduce(engine, mates)) {
       this.follow(mates);
     } else {
       this.wander();
@@ -108,24 +108,27 @@ export class Animal extends Entity {
     }
   }
 
-  tryReproduce(engine, mates) {
-    const now = Date.now();
-    if (
+  isAbleToReproduce(engine, mates) {
+    return (
       engine.entities.length < 1000 &&
-      mates.length < 10 &&
+      mates.length < this.limitOverpopulation &&
       this.energy > 30 &&
-      now - this.lastReproduction > this.reproductionCooldown &&
+      Date.now() - this.lastReproduction > this.reproductionCooldown
+    );
+  }
+
+  tryReproduce(engine, mates) {
+    if (
+      this.isAbleToReproduce(engine, mates) &&
       Math.random() < this.reproductionChance
     ) {
       this.reproduce(engine);
-      this.lastReproduction = now;
+      this.lastReproduction = Date.now();
     }
   }
 
   reproduce(engine) {
     const energyCost = ((this.radius * 5) / 100) * this.energy;
-
-    if (this.energy < energyCost) return; // trop faible énergie pour repro
 
     const baby = createEntity(this.type, this.x + 5, this.y + 5);
     baby.energy = 10 + energyCost;
