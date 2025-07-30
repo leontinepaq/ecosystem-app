@@ -40,12 +40,6 @@ export class Entity {
     bounce(this.y, canvas.height, "y");
   }
 
-  isCloseTo(other, threshold = 15) {
-    const dy = this.y - other.y;
-    const dx = this.x - other.x;
-    return dx * dx + dy * dy < threshold * threshold;
-  }
-
   getDistanceTo(other) {
     const dx = this.x - other.x;
     const dy = this.y - other.y;
@@ -73,10 +67,18 @@ export class Entity {
     drawDisc(ctx, this.x, this.y, this.visionRange, this.color, 0.1);
   }
 
+  renderDebugInfo(ctx) {
+    ctx.save();
+    ctx.fillStyle = "#fff";
+    ctx.font = "8px sans-serif";
+    ctx.fillText(`agg:${this.traits.aggression.toFixed(2)}`, this.x + 5, this.y + 5);
+    ctx.restore();
+  }
+
   render(ctx) {
     if (isDebugMode()) {
       this.renderVisionCircle(ctx);
-      // this.renderDebugInfo(ctx);
+      this.renderDebugInfo(ctx);
     }
     this.renderSprite(ctx);
   }

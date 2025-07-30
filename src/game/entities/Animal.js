@@ -1,6 +1,9 @@
 import { Entity } from "../Entity.js";
 import { SPECIES_CONFIG } from "../species.js";
 import { createEntity } from "../createEntity.js";
+import { decideBehavior } from "./Behavior.js";
+import Traits from "./Traits.js";
+
 
 export class Animal extends Entity {
   constructor(x, y, type) {
@@ -10,6 +13,7 @@ export class Animal extends Entity {
     this.lastReproduction = Date.now();
     this.energy = Math.random() * 70 + 30;
     this.maxEnergy = 100;
+    this.traits = new Traits();
   }
 
   applySpeciesConfig(config) {
@@ -35,9 +39,7 @@ export class Animal extends Entity {
       return;
     }
 
-    const { preys, predators, mates } = this.scanSurroundings(entities, engine);
-
-    this.behavior(preys, predators, mates, engine);
+    this.behave(engine);
 
     this.move(engine.canvas);
   }
@@ -46,38 +48,57 @@ export class Animal extends Entity {
     this.energy -= 0.002 * this.radius;
   }
 
-  scanSurroundings(entities, engine) {
+  scanSurroundings(engine) {
+    const nearby = engine.getNearbyEntities(this);
+    return this.classifyEntities(nearby, engine);
+  }
+
+  classifyEntities(nearbyEntities) {
     const preys = [];
     const predators = [];
     const mates = [];
+    const touchingEntities = [];
 
-    for (const other of entities) {
-      if (other === this || other.dead) continue;
-
-      const distance = this.getDistanceTo(other);
-
-      if (distance < this.visionRange) {
-        if (this.preyTypes.includes(other.type)) preys.push(other);
-        if (SPECIES_CONFIG[other.type].preyTypes?.includes(this.type))
-          predators.push(other);
-        if (this.type === other.type) mates.push(other);
+    for (const other of nearbyEntities) {
+      if (this.preyTypes.includes(other.type)) {
+        preys.push(other);
       }
-      if (distance < (this.radius + other.radius) / 2) {
-        this.interactWith(other, engine, mates);
+      if (SPECIES_CONFIG[other.type]?.preyTypes?.includes(this.type)) {
+        predators.push(other);
+      }
+      if (this.type === other.type) {
+        mates.push(other);
+      }
+      if (this.isTouching(other)) {
+        touchingEntities.push(other);
       }
     }
-    return { preys, predators, mates };
+    return { preys, predators, mates, touchingEntities };
   }
 
-  behavior(preys, predators, mates, engine) {
-    if (predators.length > 0) {
-      this.flee(predators);
-    } else if (preys.length > 0 && (this.energy < 70 || mates.length === 0)) {
-      this.follow(preys);
-    } else if (mates.length > 0 && this.isAbleToReproduce(engine, mates)) {
-      this.follow(mates);
-    } else {
-      this.wander();
+  behave(engine) {
+    const context = this.scanSurroundings(engine);
+    const behavior = decideBehavior(this, context);
+
+    for (const other of context.touchingEntities) {
+      this.interactWith(other, engine, context.mates);
+    }
+
+    switch (behavior.type) {
+      case "flee":
+        this.flee(behavior.targets);
+        break;
+      case "reproduce":
+        this.follow(behavior.targets);
+        break;
+      case "hunt":
+        this.follow(behavior.targets);
+        break;
+      case "wander":
+        this.wander();
+        break;
+      default:
+        this.wander(); //a changer
     }
   }
 
@@ -132,6 +153,7 @@ export class Animal extends Entity {
 
     const baby = createEntity(this.type, this.x + 5, this.y + 5);
     baby.energy = 10 + energyCost;
+    baby.traits = Traits.inherit(this.traits, this.traits); // Par défaut auto-clonage si seul parent
 
     this.energy -= energyCost;
     engine.addEntity(baby);
@@ -150,6 +172,14 @@ export class Animal extends Entity {
   onKill(other) {
     other.dead = true;
     this.energy = Math.min(this.energy + other.nutrition, this.maxEnergy);
+  }
+
+  canSee(other) {
+    return this.getDistanceTo(other) < this.visionRange;
+  }
+
+  isTouching(other) {
+    return this.getDistanceTo(other) < (this.radius + other.radius) / 2;
   }
 
   normalizeAndJitter(dx, dy) {

@@ -41,6 +41,13 @@ export class GameEngine {
     }
   }
 
+  getNearbyEntities(entity) {
+    return this.entities.filter((other) => {
+      if (other === entity || other.dead) return false;
+      return entity.canSee(other);
+    });
+  }
+
   update(delta) {
     this.entities.forEach((entity) => entity.update(this.entities, this));
     this.entities = this.entities.filter((entity) => !entity.dead);
