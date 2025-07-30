@@ -7,7 +7,7 @@ import "./App.css";
 function App() {
   const canvasRef = useRef(null);
   const [isSettingUp, setIsSettingUp] = useState(true);
-  const gameEngine = useGameEngine(canvasRef);
+  const gameEngine = useGameEngine(canvasRef, isSettingUp);
 
   const handleStart = () => {
     setIsSettingUp(false);

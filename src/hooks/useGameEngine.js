@@ -3,13 +3,12 @@ import { GameEngine } from "../engine/GameEngine";
 import drawBackground from "../graphics/drawBackground";
 import { loadSprites } from "../graphics/sprites";
 
-export default function useGameEngine(canvasRef) {
+export default function useGameEngine(canvasRef, isSettingUp) {
   const engineRef = useRef(null);
   const [entityCount, setEntityCount] = useState(90);
   const [speciesCount, setSpeciesCount] = useState({});
   const [totalAnimals, setTotalAnimals] = useState(0);
   const [isOver, setIsOver] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
   const [duration, setDuration] = useState(0);
   const [lastSpecies, setLastSpecies] = useState("");
 
@@ -22,11 +21,11 @@ export default function useGameEngine(canvasRef) {
     setIsOver(true);
     setDuration(durationMs);
     setLastSpecies(species);
-    setHasStarted(false);
   }, []);
 
   const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current;
+    console.log("setup canvas")
     if (canvas) {
       const ctx = canvas.getContext("2d");
       canvas.width = window.innerWidth;
@@ -39,18 +38,18 @@ export default function useGameEngine(canvasRef) {
     if (engineRef.current) {
       engineRef.current.stop();
     }
+    console.log("startengine")
     const canvas = canvasRef.current;
     if (canvas) {
+      console.log("Canvas ok");
       const ctx = canvas.getContext("2d");
       engineRef.current = new GameEngine(ctx, canvas, handleEnd);
       engineRef.current.onUpdateStats = updateStats;
       engineRef.current.start(entityCount);
-      setHasStarted(true);
     }
   }, [canvasRef, handleEnd, updateStats, entityCount]);
 
   const restart = useCallback(() => {
-
     setIsOver(false);
     setDuration(0);
     setLastSpecies("");
@@ -63,12 +62,21 @@ export default function useGameEngine(canvasRef) {
   }, [startEngine]);
 
   useEffect(() => {
+    if (!isSettingUp) {
+      console.log("isSettingUp is false, starting engine...");
+      setupCanvas();
+      startEngine();
+    }
+  }, [isSettingUp, startEngine, setupCanvas]);
+
+
+  useEffect(() => {
     let isMounted = true;
+     console.log("useeffect");
 
     loadSprites(() => {
       if (isMounted) {
         setupCanvas();
-        startEngine();
       }
     });
 
@@ -91,10 +99,9 @@ export default function useGameEngine(canvasRef) {
         engineRef.current = null;
       }
     };
-  }, [setupCanvas, startEngine]);
+  }, [setupCanvas]);
 
   return {
-    hasStarted,
     entityCount,
     setEntityCount,
     speciesCount,

@@ -14,14 +14,21 @@ function SimulationView({
 }) {
   return (
     <div className="simulation-view">
-      <SpeciesStats counts={speciesCount} total={totalAnimals} />
       <Canvas ref={canvasRef} />
-      {isOver && (
+      <SpeciesStats counts={speciesCount} total={totalAnimals} />
+      {isOver ? (
         <EndScreen
           duration={duration}
           lastSpecies={lastSpecies}
           onRestart={onRestart}
         />
+      ) : (
+        <button
+          id="restartBtn"
+          onClick={onRestart}
+          style={{ position: "absolute", right: "10px", top: "10px", opacity: 0.80}}>
+          ⟲
+        </button>
       )}
     </div>
   );

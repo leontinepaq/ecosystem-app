@@ -56,16 +56,16 @@ export class Animal extends Entity {
 
       const distance = this.getDistanceTo(other);
 
-      if (distance < (this.radius + other.radius) / 2) {
-        this.interactWith(other, engine);
-      } else if (distance < this.visionRange) {
+      if (distance < this.visionRange) {
         if (this.preyTypes.includes(other.type)) preys.push(other);
         if (SPECIES_CONFIG[other.type].preyTypes?.includes(this.type))
           predators.push(other);
         if (this.type === other.type) mates.push(other);
       }
+      if (distance < (this.radius + other.radius) / 2) {
+        this.interactWith(other, engine, mates);
+      }
     }
-
     return { preys, predators, mates };
   }
 
@@ -108,13 +108,14 @@ export class Animal extends Entity {
     }
   }
 
-  tryReproduce(engine) {
+  tryReproduce(engine, mates) {
     const now = Date.now();
     if (
-      now - this.lastReproduction > this.reproductionCooldown &&
-      Math.random() < this.reproductionChance &&
+      engine.entities.length < 1000 &&
+      mates.length < 10 &&
       this.energy > 30 &&
-      engine.entities.length < 1000
+      now - this.lastReproduction > this.reproductionCooldown &&
+      Math.random() < this.reproductionChance
     ) {
       this.reproduce(engine);
       this.lastReproduction = now;
@@ -133,13 +134,13 @@ export class Animal extends Entity {
     engine.addEntity(baby);
   }
 
-  interactWith(other, engine) {
+  interactWith(other, engine, mates) {
     if (this.preyTypes.includes(other.type)) {
       this.onKill(other);
     }
 
     if (this.type === other.type) {
-      this.tryReproduce(engine);
+      this.tryReproduce(engine, mates);
     }
   }
 
