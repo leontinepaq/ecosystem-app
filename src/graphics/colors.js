@@ -3,3 +3,5 @@ export const ENTITY_COLORS = {
   fox: "#f19066",
   snake: "#6ab04c",
 };
+
+

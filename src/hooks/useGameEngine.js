@@ -9,6 +9,7 @@ export default function useGameEngine(canvasRef) {
   const [speciesCount, setSpeciesCount] = useState({});
   const [totalAnimals, setTotalAnimals] = useState(0);
   const [isOver, setIsOver] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
   const [duration, setDuration] = useState(0);
   const [lastSpecies, setLastSpecies] = useState("");
 
@@ -21,6 +22,7 @@ export default function useGameEngine(canvasRef) {
     setIsOver(true);
     setDuration(durationMs);
     setLastSpecies(species);
+    setHasStarted(false);
   }, []);
 
   const setupCanvas = useCallback(() => {
@@ -43,10 +45,12 @@ export default function useGameEngine(canvasRef) {
       engineRef.current = new GameEngine(ctx, canvas, handleEnd);
       engineRef.current.onUpdateStats = updateStats;
       engineRef.current.start(entityCount);
+      setHasStarted(true);
     }
   }, [canvasRef, handleEnd, updateStats, entityCount]);
 
   const restart = useCallback(() => {
+
     setIsOver(false);
     setDuration(0);
     setLastSpecies("");
@@ -90,6 +94,7 @@ export default function useGameEngine(canvasRef) {
   }, [setupCanvas, startEngine]);
 
   return {
+    hasStarted,
     entityCount,
     setEntityCount,
     speciesCount,

@@ -9,7 +9,7 @@ function EndScreen({ duration, lastSpecies, onRestart }) {
       <h2>The simulation ended</h2>
       <p>Duration: {minutes} min {seconds} sec</p>
       <p>Last specy alive: <strong>{lastSpecies}</strong></p>
-      <button id="restartBtn" onClick={onRestart}>⟲ Restart</button>
+      <button id="restartBtn" onClick={onRestart}>⟲ New simulation</button>
     </div>
   );
 }

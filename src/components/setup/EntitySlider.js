@@ -5,7 +5,7 @@ export default function EntitySlider({ value, onChange }) {
   return (
     <div className="entity-slider">
       <label htmlFor="entityRange">
-        <strong>Entities:</strong> {value}
+        <strong>Number of animals:</strong> {value}
       </label>
       <input
         id="entityRange"

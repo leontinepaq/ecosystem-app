@@ -3,9 +3,9 @@ export const SPECIES_CONFIG = {
     color: "#e0c27a",
     radius: 8,
     reproductionCooldown: 2000, // plus rapide
-    reproductionChance: 0.8, // plus élevé
+    reproductionChance: 0.9, // plus élevé
     preyTypes: ["snake"], // chasse les snakes
-    speed: 1.8, // un peu plus rapide
+    speed: 1.6, // un peu plus rapide
     visionRange: 80, // peut voir arriver les prédateurs
   },
 

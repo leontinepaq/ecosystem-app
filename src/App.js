@@ -1,34 +1,40 @@
-import React, { useRef } from "react";
-import "./App.css";
-import Canvas from "./components/Canvas";
-import EntitySlider from "./components/EntitySlider";
-import SpeciesStats from "./components/SpeciesStats";
-import EndScreen from "./components/EndScreen";
+import React, { useRef, useState } from "react";
+import SimulationSetup from "./components/setup/SimulationSetup";
+import SimulationView from "./components/simulation/SimulationView";
 import useGameEngine from "./hooks/useGameEngine";
+import "./App.css";
 
 function App() {
   const canvasRef = useRef(null);
-  const {
-    entityCount,
-    setEntityCount,
-    speciesCount,
-    totalAnimals,
-    isOver,
-    duration,
-    lastSpecies,
-    restart,
-  } = useGameEngine(canvasRef);
+  const [isSettingUp, setIsSettingUp] = useState(true);
+  const gameEngine = useGameEngine(canvasRef);
+
+  const handleStart = () => {
+    setIsSettingUp(false);
+  };
+
+  const handleRestart = () => {
+    setIsSettingUp(true);
+    gameEngine.restart();
+  };
 
   return (
     <div className="App">
-      <EntitySlider value={entityCount} onChange={setEntityCount} />
-      <SpeciesStats counts={speciesCount} total={totalAnimals} />
-      <Canvas ref={canvasRef} />
-      {isOver && (
-        <EndScreen
-          duration={duration}
-          lastSpecies={lastSpecies}
-          onRestart={restart}
+      {isSettingUp ? (
+        <SimulationSetup
+          entityCount={gameEngine.entityCount}
+          onEntityCountChange={gameEngine.setEntityCount}
+          onStart={handleStart}
+        />
+      ) : (
+        <SimulationView
+          canvasRef={canvasRef}
+          speciesCount={gameEngine.speciesCount}
+          totalAnimals={gameEngine.totalAnimals}
+          isOver={gameEngine.isOver}
+          duration={gameEngine.duration}
+          lastSpecies={gameEngine.lastSpecies}
+          onRestart={handleRestart}
         />
       )}
     </div>

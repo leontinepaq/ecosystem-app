@@ -1,6 +1,10 @@
 :root {
   --color-bg-start: #e7f8e3;
   --color-bg-end: #fef6e4;
+  --color-green: #57a569;
+  --color-dark-green: #4f7557;
+  --color-orange: #faaf68;
+
 }
 
 html, body, #root, .App {

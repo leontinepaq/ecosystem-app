@@ -1,6 +1,6 @@
 import React from "react";
 import "./SpeciesStats.css";
-import { SPECIES_CONFIG } from "../game/species";
+import { SPECIES_CONFIG } from "../../game/species";
 
 function SpeciesStats({ counts, total }) {
   return (
