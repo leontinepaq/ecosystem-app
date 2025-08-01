@@ -23,8 +23,8 @@ export class Entity {
   }
 
   move(canvas) {
-    this.x += this.speed * this.dx;
-    this.y += this.speed * this.dy;
+    this.x += 2 * this.speed * this.dx;
+    this.y += 2 * this.speed * this.dy;
 
     const bounce = (coord, limit, axis) => {
       if (coord < this.radius) {
@@ -69,16 +69,16 @@ export class Entity {
 
   renderDebugInfo(ctx) {
     ctx.save();
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = "black";
     ctx.font = "8px sans-serif";
-    ctx.fillText(`agg:${this.traits.aggression.toFixed(2)}`, this.x + 5, this.y + 5);
+    ctx.fillText(`${this.generation}`, this.x -2, this.y - 10);
     ctx.restore();
   }
 
   render(ctx) {
     if (isDebugMode()) {
       this.renderVisionCircle(ctx);
-      // this.renderDebugInfo(ctx);
+      this.renderDebugInfo(ctx);
     }
     this.renderSprite(ctx);
   }

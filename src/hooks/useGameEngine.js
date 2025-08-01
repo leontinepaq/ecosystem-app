@@ -56,9 +56,9 @@ export default function useGameEngine(canvasRef, isSettingUp) {
     setTotalAnimals(0);
     if (engineRef.current) {
       engineRef.current.stop();
+      engineRef.current = null;
     }
-    startEngine();
-  }, [startEngine]);
+  }, []);
 
   useEffect(() => {
     if (!isSettingUp) {

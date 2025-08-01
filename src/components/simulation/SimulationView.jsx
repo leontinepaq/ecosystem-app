@@ -23,7 +23,6 @@ function SimulationView({
       if (e.ctrlKey && e.key === "d") {
         e.preventDefault();
         toggleDebugMode();
-        console.log("Debug mode toggled");
       }
     };
 

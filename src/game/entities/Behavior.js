@@ -5,11 +5,19 @@ export function decideBehavior(entity, context, isAbleToReproduce) {
   // Fuite : plus il y a de prédateurs et plus il est peureux, plus le score est élevé
   const fleeScore = predators.length * traits.fear;
 
-  // Reproduction : plus il y a de partenaires + forte fertilité → score élevé
-  const reproduceScore = mates.length * traits.fertilityBias * entity.isAbleToReproduce(mates);
+  // Reproduction : dépend de l'énergie restante et de la capacité à se reproduire
+  const reproduceScore =
+    (mates.length > 0 ? 1 : 0) *
+    (entity.energy / entity.maxEnergy) *
+    traits.fertilityBias *
+    entity.isAbleToReproduce(mates);
 
-  // Chasse : dépend de l'agression + proies à proximité
-  const huntScore = preys.length * traits.aggression;
+  // Chasse : dépend de l'agression + de l'énergie restante
+  // Plus l'animal est agressif et moins il a d'énergie, plus il a envie de chasser
+  const huntScore =
+    (preys.length > 0 ? 1 : 0) *
+    ((entity.maxEnergy - entity.energy) / entity.maxEnergy) *
+    traits.aggression;
 
   // Errance : dépend de la curiosité (même si rien autour)
   const wanderScore = 0.5 + traits.curiosity * 0.5; // toujours un peu envie de bouger

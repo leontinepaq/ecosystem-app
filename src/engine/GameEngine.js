@@ -2,8 +2,9 @@ import { createEntity } from "../game/createEntity";
 import drawBackground from "../graphics/drawBackground";
 
 const DEFAULT_ENTITY_TYPES = ["chicken", "fox", "snake"];
-const DEFAULT_TOTAL_ENTITIES = 50;
-let globalDebugMode = true;
+const DEFAULT_TOTAL_ENTITIES = 90;
+const MAX_ENTITY_COUNT = 2000;
+let globalDebugMode = false;
 
 export class GameEngine {
   constructor(ctx, canvas, onEndCallback) {
@@ -36,7 +37,7 @@ export class GameEngine {
   }
 
   addEntity(entity) {
-    if (entity && this.entities.length < 1000) {
+    if (entity && this.entities.length < MAX_ENTITY_COUNT) {
       this.entities.push(entity);
     }
   }
@@ -88,18 +89,12 @@ export class GameEngine {
       const countByType = this.countEntitiesByType();
       const traitsStats = this.getTraitsStats();
 
-      console.log(
-        "🧠 Trait stats per species:",
-        JSON.stringify(traitsStats, null, 2)
-      );
-      console.log("🔢 Count by type:", countByType);
-
       this.onUpdateStats(countByType, traitsStats);
     }
   }
 
   update(delta) {
-    this.entities.forEach((entity) => entity.update(this.entities, this));
+    this.entities.forEach((entity) => entity.update(this.entities, this, delta));
     this.entities = this.entities.filter((entity) => !entity.dead);
 
     this.updateStats();

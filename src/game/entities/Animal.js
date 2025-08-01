@@ -4,7 +4,6 @@ import { createEntity } from "../createEntity.js";
 import { decideBehavior } from "./Behavior.js";
 import Traits from "./Traits.js";
 
-
 export class Animal extends Entity {
   constructor(x, y, type) {
     const config = SPECIES_CONFIG[type];
@@ -14,6 +13,9 @@ export class Animal extends Entity {
     this.energy = Math.random() * 70 + 30;
     this.maxEnergy = 100;
     this.traits = new Traits();
+    this.generation = 0; // pour le suivi de l'évolution
+    this.age = 0; // en secondes ou ticks
+    this.maxAge = 15 + Math.random() * 15; // par ex. entre 1 et 2 minutes (ajuste comme tu veux)
   }
 
   applySpeciesConfig(config) {
@@ -22,7 +24,7 @@ export class Animal extends Entity {
       return base + (Math.random() * 2 - 1) * delta; // +/- variation%
     };
 
-    this.radius = randomize(config.radius ?? 5, 0.15) /2; // ±15%
+    this.radius = randomize(config.radius ?? 5, 0.15) / 2; // ±15%
     this.reproductionCooldown = config.reproductionCooldown ?? 5000;
     this.reproductionChance = config.reproductionChance ?? 0.5;
     this.preyTypes = config.preyTypes ?? [];
@@ -31,8 +33,17 @@ export class Animal extends Entity {
     this.nutrition = this.radius * 5;
   }
 
-  update(entities, engine) {
+  update(entities, engine, delta) {
+    this.age += delta / 1000;
     this.consumeEnergy();
+
+    if (this.age >= this.maxAge * 0.8) {
+      this.energy -= 0.005; // fatigue de vieillesse
+    }
+    if (this.age >= this.maxAge) {
+      this.dead = true;
+      return;
+    }
 
     if (this.energy <= 0) {
       this.dead = true;
@@ -138,10 +149,7 @@ export class Animal extends Entity {
   }
 
   tryReproduce(engine, mates) {
-    if (
-      this.isAbleToReproduce(engine, mates) &&
-      Math.random() < this.reproductionChance
-    ) {
+    if (this.isAbleToReproduce(mates) && Math.random() < this.reproductionChance) {
       this.reproduce(engine);
       this.lastReproduction = Date.now();
     }
@@ -153,6 +161,7 @@ export class Animal extends Entity {
     const baby = createEntity(this.type, this.x + 5, this.y + 5);
     baby.energy = 10 + energyCost;
     baby.traits = Traits.inherit(this.traits, this.traits); // Par défaut auto-clonage si seul parent
+    baby.generation = this.generation + 1; // Incrémente la génération
 
     this.energy -= energyCost;
     engine.addEntity(baby);
