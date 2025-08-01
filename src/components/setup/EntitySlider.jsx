@@ -11,7 +11,7 @@ export default function EntitySlider({ value, onChange }) {
         id="entityRange"
         type="range"
         min="3"
-        max="200"
+        max="1000"
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
       />

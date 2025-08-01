@@ -48,17 +48,61 @@ export class GameEngine {
     });
   }
 
+  countEntitiesByType() {
+    return this.entities.reduce((acc, entity) => {
+      acc[entity.type] = (acc[entity.type] || 0) + 1;
+      return acc;
+    }, {});
+  }
+
+  getTraitsStats() {
+    const stats = {};
+    for (const entity of this.entities) {
+      const { type, traits } = entity;
+      if (!stats[type]) {
+        stats[type] = { count: 0 };
+        for (const key of Object.keys(traits)) {
+          stats[type][key] = 0;
+        }
+      }
+      stats[type].count++;
+      for (const key of Object.keys(traits)) {
+        stats[type][key] += traits[key];
+      }
+    }
+
+    // Moyennes
+    for (const type in stats) {
+      const count = stats[type].count;
+      for (const key in stats[type]) {
+        if (key !== "count") {
+          stats[type][key] /= count;
+        }
+      }
+    }
+    return stats;
+  }
+
+  updateStats() {
+    if (this.onUpdateStats) {
+      const countByType = this.countEntitiesByType();
+      const traitsStats = this.getTraitsStats();
+
+      console.log(
+        "🧠 Trait stats per species:",
+        JSON.stringify(traitsStats, null, 2)
+      );
+      console.log("🔢 Count by type:", countByType);
+
+      this.onUpdateStats(countByType, traitsStats);
+    }
+  }
+
   update(delta) {
     this.entities.forEach((entity) => entity.update(this.entities, this));
     this.entities = this.entities.filter((entity) => !entity.dead);
 
-    if (this.onUpdateStats) {
-      const counts = this.entities.reduce((acc, entity) => {
-        acc[entity.type] = (acc[entity.type] || 0) + 1;
-        return acc;
-      }, {});
-      this.onUpdateStats(counts);
-    }
+    this.updateStats();
 
     this.checkEndCondition();
   }

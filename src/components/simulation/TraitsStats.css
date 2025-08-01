@@ -1,0 +1,22 @@
+.traits-stats {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 10px;
+  border-radius: 6px;
+  font-family: sans-serif;
+  font-size: 14px;
+  z-index: 10;
+  min-width: 180px;
+}
+
+.traits-summary {
+  font-size: 0.85em;
+  margin-left: 1em;
+  color: #666;
+}
+
+.trait-line {
+  margin: 2px 0;
+}

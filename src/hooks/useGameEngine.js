@@ -8,13 +8,15 @@ export default function useGameEngine(canvasRef, isSettingUp) {
   const [entityCount, setEntityCount] = useState(90);
   const [speciesCount, setSpeciesCount] = useState({});
   const [totalAnimals, setTotalAnimals] = useState(0);
+  const [traitsStats, setTraitsStats] = useState({});
   const [isOver, setIsOver] = useState(false);
   const [duration, setDuration] = useState(0);
   const [lastSpecies, setLastSpecies] = useState("");
 
-  const updateStats = useCallback((counts) => {
-    setSpeciesCount(counts);
-    setTotalAnimals(Object.values(counts).reduce((a, b) => a + b, 0));
+  const updateStats = useCallback((countByType, traitsStats) => {
+    setSpeciesCount(countByType);
+    setTotalAnimals(Object.values(countByType).reduce((a, b) => a + b, 0));
+    setTraitsStats(traitsStats);
   }, []);
 
   const handleEnd = useCallback((species, durationMs) => {
@@ -25,7 +27,6 @@ export default function useGameEngine(canvasRef, isSettingUp) {
 
   const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current;
-    console.log("setup canvas")
     if (canvas) {
       const ctx = canvas.getContext("2d");
       canvas.width = window.innerWidth;
@@ -38,10 +39,8 @@ export default function useGameEngine(canvasRef, isSettingUp) {
     if (engineRef.current) {
       engineRef.current.stop();
     }
-    console.log("startengine")
     const canvas = canvasRef.current;
     if (canvas) {
-      console.log("Canvas ok");
       const ctx = canvas.getContext("2d");
       engineRef.current = new GameEngine(ctx, canvas, handleEnd);
       engineRef.current.onUpdateStats = updateStats;
@@ -63,16 +62,13 @@ export default function useGameEngine(canvasRef, isSettingUp) {
 
   useEffect(() => {
     if (!isSettingUp) {
-      console.log("isSettingUp is false, starting engine...");
       setupCanvas();
       startEngine();
     }
   }, [isSettingUp, startEngine, setupCanvas]);
 
-
   useEffect(() => {
     let isMounted = true;
-     console.log("useeffect");
 
     loadSprites(() => {
       if (isMounted) {
@@ -106,6 +102,7 @@ export default function useGameEngine(canvasRef, isSettingUp) {
     setEntityCount,
     speciesCount,
     totalAnimals,
+    traitsStats,
     isOver,
     duration,
     lastSpecies,

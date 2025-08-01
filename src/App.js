@@ -31,6 +31,7 @@ function App() {
           canvasRef={canvasRef}
           speciesCount={gameEngine.speciesCount}
           totalAnimals={gameEngine.totalAnimals}
+          traitsStats={gameEngine.traitsStats}
           isOver={gameEngine.isOver}
           duration={gameEngine.duration}
           lastSpecies={gameEngine.lastSpecies}

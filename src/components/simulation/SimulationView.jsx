@@ -1,15 +1,17 @@
-import React, { useEffect } from "react"; // ← ajoute useEffect
+import React, { useEffect } from "react"; 
 import SpeciesStats from "./SpeciesStats";
+import TraitsStats from "./TraitsStats";
 import Canvas from "./Canvas";
 import EndScreen from "./EndScreen";
 import Button from "../common/Button";
-import { toggleDebugMode } from "../../engine/GameEngine"; // ← importe la fonction
+import { toggleDebugMode } from "../../engine/GameEngine"; 
 import "./SimulationView.css";
 
 function SimulationView({
   canvasRef,
   speciesCount,
   totalAnimals,
+  traitsStats,
   isOver,
   duration,
   lastSpecies,
@@ -33,6 +35,7 @@ function SimulationView({
     <div className="simulation-view">
       <Canvas ref={canvasRef} />
       <SpeciesStats counts={speciesCount} total={totalAnimals} />
+      <TraitsStats traits={traitsStats} />
       {isOver ? (
         <EndScreen
           duration={duration}

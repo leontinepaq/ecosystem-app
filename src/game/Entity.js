@@ -78,7 +78,7 @@ export class Entity {
   render(ctx) {
     if (isDebugMode()) {
       this.renderVisionCircle(ctx);
-      this.renderDebugInfo(ctx);
+      // this.renderDebugInfo(ctx);
     }
     this.renderSprite(ctx);
   }
