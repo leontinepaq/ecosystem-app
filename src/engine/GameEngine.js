@@ -36,7 +36,7 @@ export class GameEngine {
   }
 
   addEntity(entity) {
-    if (entity) {
+    if (entity && this.entities.length < 1000) {
       this.entities.push(entity);
     }
   }

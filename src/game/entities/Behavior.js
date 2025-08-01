@@ -1,4 +1,4 @@
-export function decideBehavior(entity, context) {
+export function decideBehavior(entity, context, isAbleToReproduce) {
   const { preys, predators, mates } = context;
   const traits = entity.traits;
 
@@ -6,7 +6,7 @@ export function decideBehavior(entity, context) {
   const fleeScore = predators.length * traits.fear;
 
   // Reproduction : plus il y a de partenaires + forte fertilité → score élevé
-  const reproduceScore = mates.length * traits.fertilityBias;
+  const reproduceScore = mates.length * traits.fertilityBias * entity.isAbleToReproduce(mates);
 
   // Chasse : dépend de l'agression + proies à proximité
   const huntScore = preys.length * traits.aggression;
@@ -23,11 +23,6 @@ export function decideBehavior(entity, context) {
 
   // Choisir le meilleur comportement
   const best = behaviors.reduce((a, b) => (b.score > a.score ? b : a));
-
-  // On peut éventuellement rajouter un peu d'aléatoire pour éviter les boucles figées
-  if (best.targets.length > 0) {
-    best.target = best.targets[Math.floor(Math.random() * best.targets.length)];
-  }
 
   return best;
 }

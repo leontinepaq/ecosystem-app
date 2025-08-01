@@ -22,7 +22,7 @@ export class Animal extends Entity {
       return base + (Math.random() * 2 - 1) * delta; // +/- variation%
     };
 
-    this.radius = randomize(config.radius ?? 5, 0.15); // ±15%
+    this.radius = randomize(config.radius ?? 5, 0.15) /2; // ±15%
     this.reproductionCooldown = config.reproductionCooldown ?? 5000;
     this.reproductionChance = config.reproductionChance ?? 0.5;
     this.preyTypes = config.preyTypes ?? [];
@@ -78,7 +78,7 @@ export class Animal extends Entity {
 
   behave(engine) {
     const context = this.scanSurroundings(engine);
-    const behavior = decideBehavior(this, context);
+    const behavior = decideBehavior(this, context, this.isAbleToReproduce);
 
     for (const other of context.touchingEntities) {
       this.interactWith(other, engine, context.mates);
@@ -129,9 +129,8 @@ export class Animal extends Entity {
     }
   }
 
-  isAbleToReproduce(engine, mates) {
+  isAbleToReproduce(mates) {
     return (
-      engine.entities.length < 1000 &&
       mates.length < this.limitOverpopulation &&
       this.energy > 30 &&
       Date.now() - this.lastReproduction > this.reproductionCooldown
