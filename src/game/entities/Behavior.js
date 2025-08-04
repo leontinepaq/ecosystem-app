@@ -19,14 +19,14 @@ export function decideBehavior(entity, context, isAbleToReproduce) {
     ((entity.maxEnergy - entity.energy) / entity.maxEnergy) *
     traits.aggression;
 
-  // Errance : dépend de la curiosité (même si rien autour)
-  const wanderScore = 0.5 + traits.curiosity * 0.5; // toujours un peu envie de bouger
+  // Errance : dépend de la curiosité et de l'energie restante
+  const wanderScore = 0.1 + traits.curiosity * (entity.energy / entity.maxEnergy);
 
   const behaviors = [
-    { type: "flee", score: fleeScore, targets: predators },
-    { type: "reproduce", score: reproduceScore, targets: mates },
-    { type: "hunt", score: huntScore, targets: preys },
-    { type: "wander", score: wanderScore, targets: [] },
+    { type: "flee",       score: fleeScore,       targets: predators },
+    { type: "reproduce",  score: reproduceScore,  targets: mates },
+    { type: "hunt",       score: huntScore,       targets: preys },
+    { type: "wander",     score: wanderScore,     targets: [] },
   ];
 
   // Choisir le meilleur comportement

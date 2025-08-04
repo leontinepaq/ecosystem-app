@@ -14,8 +14,8 @@ export class Animal extends Entity {
     this.maxEnergy = 100;
     this.traits = new Traits();
     this.generation = 0; // pour le suivi de l'évolution
-    this.age = 0; // en secondes ou ticks
-    this.maxAge = 15 + Math.random() * 15; // par ex. entre 1 et 2 minutes (ajuste comme tu veux)
+    this.age = 0; // en secondes 
+    this.maxAge = 30 + Math.random() * 15; // Âge maximum entre 30 et 45 secondes
   }
 
   applySpeciesConfig(config) {

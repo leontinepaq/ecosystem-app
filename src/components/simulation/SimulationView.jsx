@@ -23,12 +23,13 @@ function SimulationView({
       if (e.ctrlKey && e.key === "d") {
         e.preventDefault();
         toggleDebugMode();
+        console.log(`Traits stats: ${JSON.stringify(traitsStats, null, 2)}`);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [traitsStats]);
 
   return (
     <div className="simulation-view">
