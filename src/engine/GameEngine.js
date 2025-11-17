@@ -58,14 +58,19 @@ export class GameEngine {
 
   getTraitsStats() {
     const stats = {};
+
     for (const entity of this.entities) {
       const { type, traits } = entity;
+
+      // Init
       if (!stats[type]) {
         stats[type] = { count: 0 };
         for (const key of Object.keys(traits)) {
           stats[type][key] = 0;
         }
       }
+
+      // Accumulation
       stats[type].count++;
       for (const key of Object.keys(traits)) {
         stats[type][key] += traits[key];
@@ -81,6 +86,7 @@ export class GameEngine {
         }
       }
     }
+
     return stats;
   }
 
